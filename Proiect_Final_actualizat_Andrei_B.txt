@@ -1,0 +1,141 @@
+1. Numele Proiectului:
+   MobiOferta - Calculator de ofertare pentru mobila la comanda
+   (aplicatie desktop cu interfata grafica - CustomTkinter)
+
+
+2. Descrierea ideii si Obiective:
+   MobiOferta este o aplicatie desktop care calculeaza costul de productie
+   si pretul de oferta pentru piese de mobila la comanda. Interfata grafica
+   este realizata cu CustomTkinter (varianta moderna a tkinter).
+
+   Utilizatorul introduce intr-un formular piesele unui proiect (lungime,
+   latime, material, cantul pe laturi, nr. de bucati) iar aplicatia
+   calculeaza automat:
+   - suprafata si costul de material pe fiecare piesa
+   - costul cantului (pe metri liniari). Cantul se da in notatie de
+     tamplarie: L / l = o latura lunga / scurta, 2L / 2l = ambele laturi
+     lungi / scurte
+   - costul accesoriilor adaugate manual (nume, pret/bucata, cantitate;
+     optional)
+   - un adaos de pierdere la debitare ca PROCENT UNIC (ex. 20%) aplicat la
+     final pe costul materialelor
+   - manopera estimativa = cost materiale x factor manopera (ex. 1,5) x grad
+     de dificultate (ex. 2,5); factorii se introduc de utilizator
+   - totalul proiectului
+
+   Materialele si preturile lor sunt pastrate intr-un CATALOG local
+   (catalog.json), organizat pe categorii. Preturile sunt reale, preluate
+   de pe site-urile magazinelor (vezi folderul Preturi/ cu capturile si
+   Structura.jpg pentru aranjarea pe categorii). Preturile sunt pe PLACA
+   (lei/bucata) si sunt transformate automat in lei/m2 folosind dimensiunile
+   placii (care difera de la produs la produs).
+
+   In formular, utilizatorul alege intai CATEGORIA, apoi PRODUSUL; grosimea
+   si pretul (lei/m2) se completeaza automat din catalog, dar pretul ramane
+   editabil daca vrei sa-l ajustezi.
+
+   Piesele adaugate se vad intr-un tabel pe ecran, cu posibilitate de
+   EDITARE (butonul Edit reincarca piesa in formular) si de STERGERE.
+
+   La final aplicatia exporta:
+   - o lista de debitat (cut list) in format CSV, gata de importat in
+     optimizatorul de croit / softul de nesting (ex. Deepnest)
+   - oferta pentru client intr-un fisier JSON
+
+   Datele (catalogul de materiale si proiectele salvate) sunt pastrate in
+   fisiere JSON, deci nu se pierd intre rulari.
+
+
+   Nota despre preturi:
+   Ideea initiala a fost preluarea preturilor automat de pe site (scraping).
+   In practica magazinele mari (mathaus, leroymerlin, hornbach, holver)
+   blocheaza accesul automat (Cloudflare/Akamai - eroare 403, liste randate
+   cu JavaScript, sau preturi doar dupa logare), asa ca scraping-ul s-a
+   dovedit nefiabil si a fost scos. Preturile se tin acum intr-un catalog
+   local cu valori reale, luate manual de pe site (vezi folderul Preturi/).
+
+
+3. Arhitectura OOP (Clase):
+
+   STRATUL DE DATE / LOGICA (independent de interfata):
+
+   - Material (clasa ABSTRACTA, ABC) cu metoda abstracta cost_mp().
+     Cate o subclasa pentru fiecare categorie din Structura:
+       - PALMelaminat
+       - PALSimplu
+       - MDFSimplu
+       - MDFMelaminat
+       - MDFInfoliat   (MDF infoliat si furniruit)
+       - Placaj
+       - HDFPFL         (HDF si PFL)
+     Material are si:
+       - @classmethod din_catalog(intrare)  -> factory care transforma
+         pretul pe placa in lei/m2 si construieste subclasa potrivita
+       - @classmethod din_piesa_dict(date)  -> reface materialul la
+         incarcarea unui proiect salvat
+       - dictionarul CATEGORII (nume categorie -> clasa)
+
+   - CatalogMateriale (catalog_materiale.py) - citeste catalog.json si
+     ofera materialele grupate pe categorii (sursa de preturi a aplicatiei)
+
+   - Piesa        (dimensiuni L x l, material, cant pe laturi, nr. bucati)
+   - Accesoriu    (linie libera: nume, pret/bucata, cantitate)
+   - Proiect      (aduna piesele si accesoriile, calculeaza totalul cu
+                   pierderea si manopera, salveaza in JSON)
+   - Exportator   (genereaza cut list CSV + oferta client JSON)
+
+   Exceptii personalizate (in exceptii.py):
+   - GrosimeInvalidaError
+   - MaterialIndisponibilError
+   - DimensiuneInvalidaError
+
+   STRATUL DE INTERFATA (CustomTkinter):
+
+   - App            (fereastra principala, mosteneste customtkinter.CTk)
+   - FormularPiesa  (frame pentru introducerea unei piese noi; dropdown
+                     Categorie -> Material in cascada)
+   - TabelPiese     (frame cu piesele adaugate; butoane Edit si X)
+   - PanouTotal     (frame cu rezultatele si butoanele de export)
+
+   Concepte din curs folosite: clase si __init__/self, mostenire si super()
+   (atat pentru materiale cat si pentru clasele de UI), clase abstracte
+   (ABC, @abstractmethod), incapsulare cu @property si validare, @classmethod
+   ca factory (din_catalog / din_json / din_dict), __str__/__repr__, exceptii
+   custom (raise/except), JSON, CSV, modulul os, venv + pip pentru dependinte
+   (customtkinter).
+
+
+4. Structura Fisierelor:
+
+   - main.py              -> punctul de pornire; porneste aplicatia
+   - gui.py               -> App + FormularPiesa + TabelPiese + PanouTotal
+   - materiale.py         -> Material (ABC) + subclasele pe categorii
+   - catalog_materiale.py -> CatalogMateriale (citeste catalog.json)
+   - catalog.json         -> catalogul de produse (categorie, nume, dimensiuni
+                             placa, grosime, pret pe placa)
+   - piesa.py             -> clasa Piesa
+   - accesoriu.py         -> clasa Accesoriu (feronerie)
+   - proiect.py           -> clasa Proiect (procent pierdere aplicat la final)
+   - export.py            -> clasa Exportator (cut list CSV + oferta JSON)
+   - exceptii.py          -> exceptiile personalizate
+   - requirements.txt     -> customtkinter
+   - Preturi/             -> capturi cu preturi reale + Structura.jpg
+   - proiecte.json        -> proiectele salvate (se creeaza la prima salvare)
+
+   Separarea pe straturi: gui.py NU contine calcule, doar afiseaza date si
+   apeleaza clasele din stratul de logica, care poate fi testat independent.
+
+
+5. Cum functioneaza acum (stadiu actual):
+
+   - La pornire, App incarca CatalogMateriale din catalog.json.
+   - Utilizatorul alege categoria si produsul; grosimea si pretul lei/m2 se
+     completeaza singure. Adauga lungimea, latimea, nr. de bucati, laturile
+     cu cant si pretul cantului, apoi "+ Adauga piesa".
+   - Piesa apare in tabel cu suprafata si costurile calculate. Se poate
+     edita (Edit) sau sterge (X).
+   - In PanouTotal se vede sumarul (suprafata, materiale, cant, accesorii,
+     adaos de pierdere, manopera estimativa, TOTAL) si se seteaza procentul
+     de pierdere, factorul de manopera si gradul de dificultate.
+   - Proiectul se salveaza in proiecte.json si se poate exporta ca lista de
+     debitat (CSV) si ca oferta (JSON).

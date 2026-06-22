@@ -1,0 +1,10 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# fisiere generate la rulare
+proiecte.json
+cut_list_*.csv
+oferta_*.json

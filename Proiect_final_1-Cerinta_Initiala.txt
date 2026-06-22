@@ -1,0 +1,44 @@
+Timp de o ora, veti face un exercitiu de 
+brainstorming pentru a va alege proiectul pe care il veti dezvolta in Python. 
+Puteti alege absolut orice tema va pasioneaza (un joculet, un utilitar de 
+automatizare, o aplicatie de analiza de date, un bot de chat, etc.).
+
+Pentru ca proiectul sa fie curat, scalabil si usor de intretinut, am doua 
+recomandari si cerinte tehnice de baza:
+1. Utilizarea OOP (Object-Oriented Programming): Organizati logica aplicatiei 
+   folosind clase si obiecte.
+2. Modularizare: Nu scrieti tot codul intr-un singur fisier gigant. Impartiti 
+   proiectul in mai multe fisiere (.py) cu responsabilitati specifice.
+
+Pana la finalul orei, trebuie sa completati si sa trimiteti acest mini-plan:
+
+--------------------------------------------------
+FISA PROIECTULUI (Completati campurile de mai jos)
+--------------------------------------------------
+
+1. Numele Proiectului:
+   [Cum se va numi aplicatia ta?]
+
+2. Descrierea ideii si Obiective:
+   [Ce face aplicatia? Care este scopul ei si ce functionalitati principale 
+   va avea la final?]
+
+3. Arhitectura OOP (Clase estimate):
+   [Ce clase crezi ca vei folosi in cod? 
+   Exemplu pentru un joc: Clasa Jucator, Clasa Inamic, Clasa Harta, Clasa Joc]
+
+4. Structura Fisierelor:
+   [Cum preconizezi ca vei imparti codul in fisiere separate? 
+   Exemplu: 
+   - main.py (punctul de pornire)
+   - personaje.py (clasele pentru caractere)
+   - motor_joc.py (logica principala a jocului)
+   - utilitare.py (functii helper pentru incarcat resurse)]
+
+5. Primul pas concret in implementare:
+   [Care este prima functionalitate simpla de la care vei incepe sa scrii 
+   codul data viitoare?]
+
+
+
+CODUL O SA FIE PUS PE GITHUB! (Singura cerinta obligatorie :) )
